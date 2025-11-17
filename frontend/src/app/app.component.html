@@ -1,0 +1,49 @@
+<div class="layout">
+  <header>
+    <h1>Video Claim Checker</h1>
+    <p>Paste a video URL, play it, and watch live claim verification results.</p>
+  </header>
+
+  <section class="controls">
+    <label for="videoUrl">Video URL</label>
+    <input id="videoUrl" name="videoUrl" [(ngModel)]="videoUrl" placeholder="https://example.com/video.mp4" />
+    <button (click)="startSession()">Start session</button>
+    <span class="status">{{ statusMessage }}</span>
+  </section>
+
+  <section class="content">
+    <div class="player">
+      <video controls [src]="videoUrl" *ngIf="videoUrl"></video>
+      <p *ngIf="!videoUrl" class="placeholder">Video preview will appear here.</p>
+    </div>
+
+    <div class="panel transcript">
+      <div class="panel-header">
+        <h2>Live transcript</h2>
+        <button (click)="fetchTranscript()" [disabled]="!sessionId">Refresh</button>
+      </div>
+      <div class="items">
+        <div *ngFor="let item of transcript" class="item">
+          <div class="timestamp">{{ item.timestamp | number: '1.0-0' }}s</div>
+          <div class="text">{{ item.text }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel claims">
+      <div class="panel-header">
+        <h2>Claim checks (10s cadence)</h2>
+      </div>
+      <div class="items">
+        <div *ngFor="let claim of claims" class="item">
+          <div class="timestamp">{{ claim.timestamp | number: '1.0-0' }}s</div>
+          <div class="text">{{ claim.text }}</div>
+          <div class="badge" [class.true]="claim.verdict === 'true'" [class.false]="claim.verdict === 'false'">
+            {{ claim.verdict | uppercase }} · {{ claim.confidence | percent: '1.0-0' }}
+          </div>
+        </div>
+        <p *ngIf="!claims.length" class="placeholder">No claim checks yet. They will appear every 10 seconds.</p>
+      </div>
+    </div>
+  </section>
+</div>
